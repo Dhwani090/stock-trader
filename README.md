@@ -14,5 +14,5 @@ This repository contains a Python-based stock trading algorithm that analyzes st
 ## File Structure
 stock-trader/
  - ├── LiveDataTest.ipynb
- - ├── FRTEST.ipynb
+ - ├── stock.ipynb
  - └── multiprocessing.py
