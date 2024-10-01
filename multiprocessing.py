@@ -1,6 +1,7 @@
-"""import os
+import os
 import re
 import pandas as pd
+import yfinance as yf
 import datetime
 from datetime import datetime, timedelta
 from ipywidgets import Button, VBox, Label, Textarea
@@ -74,6 +75,64 @@ dates_watchlists = [
         'watchlist': watchlists['8/22'],
     }
 ]
+def get_most_volatile_stocks(num_stocks=5):
+    # You can change the method of getting these stocks based on your requirements
+        tickers = ['AAPL', 'TSLA', 'AMZN', 'GOOGL', 'MSFT', 'NFLX', 'NVDA', 'AMD']  # Example tickers
+        volatility_data = []
+        
+        for ticker in tickers:
+            try:
+                stock_data = yf.download(ticker, period='1d', interval='1m')
+                if not stock_data.empty:
+                    stock_data['Returns'] = stock_data['Close'].pct_change()
+                    volatility = stock_data['Returns'].std()  # Calculate volatility
+                    volatility_data.append((ticker, volatility))
+            except Exception as e:
+                print(f"Failed to download data for {ticker}: {e}")
+
+    # Sort by volatility and return the top N stocks
+        volatility_data.sort(key=lambda x: x[1], reverse=True)
+        return [ticker for ticker, _ in volatility_data[:num_stocks]]
+
+    # Update the CONFIG['watchlist'] with the most volatile stocks
+def update_watchlist():
+        most_volatile_stocks = get_most_volatile_stocks(num_stocks=5)
+        CONFIG['watchlist'] = most_volatile_stocks
+        print(f"Updated watchlist: {CONFIG['watchlist']}")
+
+# Example CONFIG dictionary
+CONFIG = {
+        'watchlist': [],
+        'capital': 10000,
+        'test_date': datetime.now().strftime('%Y-%m-%d'),
+        'start_time': datetime.now(),
+        'rsi_window': 15,
+        'stoch_rsi_window':15,
+        'buy_rsi_threshold': 30,
+        'capital': 25000,
+        'target_percentage': 0.55,  
+        'stop_loss_percentage': 0.5,#(-)
+        'stage2tp':1,
+        'stage2sl':0.5,
+        'stage2':False,
+        'activateS2': False,
+        'reorder': True,
+        'Trail': False,
+        'folder_name': 'LiveDataTest',
+        'clicks':370,
+        'lower-limit': -375,
+        'trailing-loss':200,
+        'trailing-breakthrough':300,
+        'trailing': False,
+        'trading': True,
+        "TSL": 0,
+        'TSL_D': 0.55
+   
+        # Add other config settings as needed
+    }
+
+    # Call the update_watchlist function to refresh the watchlist
+update_watchlist()
 def single_day(window, rsi, watchlist, start, test, target, loss):
     CONFIG = {
         'window':window,
@@ -518,6 +577,6 @@ def run_all_permutations():
 
 
 if __name__ == "__main__":
-    run_all_permutations() """
+    run_all_permutations() 
 
 
